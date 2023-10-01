@@ -1,172 +1,18 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    private static String menuTop = "▛" + "▀".repeat(98) + "▜";
-    private static String menuBottom = "▙" + "▄".repeat(98) + "▟";
-    private static String menuSpace = "▌" + " ".repeat(98) + "▐";
-    private static void menuItem(String text) {
-        System.out.println("▌" + centerInField(text, 98) + "▐");
-    }
-    static String centerInField(String text, int fieldWidth){
-        int spacesToAdd = fieldWidth - text.length();
-        int leftPad = spacesToAdd / 2;
-        int rightPad = spacesToAdd - leftPad;
-        return " ".repeat(leftPad) + text + " ".repeat(rightPad);
-    }
-
-    private static Scanner scanner;
-    private static BookDatabase db;
 
     public static void main(String[] args) {
         System.out.println("Initializing book database...\n");
-        db = new BookDatabase();
+        BookDatabase db = new BookDatabase();
         initializeDB(db);
+        Scanner scanner = new Scanner(System.in);
 
-        scanner = new Scanner(System.in);
-
-        mainMenu();
+        Menu.setDb(db);
+        Menu.setScanner(scanner);
+        Menu.mainMenu();
 
         scanner.close();
-    }
-
-    private static void mainMenu() {
-
-        int input;
-        boolean running = true;
-        while (running) {
-            System.out.println(menuTop);
-            System.out.println(menuSpace);
-            menuItem("Welcome");
-            System.out.println(menuSpace);
-            menuItem("1. Search For A Book");
-            menuItem("2. Checkout A Book");
-            menuItem("3. Return A Book");
-            menuItem("4. Exit");
-            System.out.println(menuSpace);
-            System.out.println(menuBottom);
-
-            int selection = getMenuSelection(4);
-
-            switch (selection) {
-                case 1:
-                    searchMenu();
-                    break;
-                case 2:
-//                    checkoutMenu();
-                    break;
-                case 3:
-//                    returnMenu();
-                    break;
-                case 4:
-                    System.out.println("Thanks! Have a nice day!");
-                    running = false;
-                    break;
-            }
-        }
-    }
-
-    private static void searchMenu() {
-        int input;
-        boolean running = true;
-        System.out.println(menuTop);
-        System.out.println(menuSpace);
-        menuItem("Welcome");
-        System.out.println(menuSpace);
-        menuItem("1. Search By Title");
-        menuItem("2. Search By Author");
-        menuItem("3. Search By ISBN");
-        menuItem("4. Exit");
-        System.out.println(menuSpace);
-        System.out.println(menuBottom);
-
-        int selection = getMenuSelection(4);
-
-        switch (selection) {
-            case 1:
-                search("title");
-                break;
-            case 2:
-                search("author");
-                break;
-            case 3:
-                search("isbn");
-                break;
-            case 4:
-                break;
-        }
-    }
-
-    private static void search(String type) {
-        String searchString;
-        while (true) {
-            System.out.print("Enter Search String: ");
-            searchString = scanner.next();
-            scanner.nextLine();
-            if (type.equals("isbn")) {
-                if (searchString.length() != 10) {
-                    System.out.println("Must be 10 characters!");
-                    continue;
-                }
-            }
-            break;
-        }
-        System.out.println();
-        System.out.println(menuTop);
-        menuItem("Results");
-        System.out.println(menuBottom);
-
-        ArrayList<Integer> results;
-        switch (type) {
-            case "title":
-                results = db.titleSearch(searchString);
-                break;
-            case "author":
-                results = db.AuthorSearch(searchString);
-                break;
-            case "isbn":
-                results = db.isbnSearch(searchString);
-                break;
-            default:
-                results = null;
-        }
-
-        if (results != null) {
-            for (int result : results) {
-                System.out.println(db.getBookInfo(result));
-                System.out.println();
-            }
-        } else {
-            System.out.println("No results.");
-        }
-
-        System.out.println("Press Enter To Continue...");
-        try {
-            System.in.read();
-        } catch (Exception e) {}
-    }
-
-    static int getMenuSelection(int numberOfChoices) {
-        int input;
-        while (true) {
-            System.out.println();
-            System.out.print("Enter Selection: ");
-            try {
-                input = scanner.nextInt();
-                scanner.nextLine();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input");
-                scanner.nextLine();
-                continue;
-            }
-            if (input >= 1 && input <= numberOfChoices) {
-                break;
-            } else {
-                System.out.println("Invalid input.");
-            }
-        }
-        return input;
     }
 
     static void initializeDB(BookDatabase db) {
