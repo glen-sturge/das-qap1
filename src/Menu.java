@@ -5,9 +5,13 @@ import java.util.Scanner;
 
 public class Menu {
     private static BookDatabase db;
+    private static UserDatabase userDb;
     private static Scanner scanner;
     public static void setDb(BookDatabase dbase) {
         db = dbase;
+    }
+    public static void setUserDb(UserDatabase dBase) {
+        userDb = dBase;
     }
     public static void setScanner(Scanner sc) {
         scanner = sc;
@@ -44,11 +48,12 @@ public class Menu {
             menuItem("1. Search For A Book");
             menuItem("2. Checkout A Book  ");
             menuItem("3. Return A Book    ");
-            menuItem("4. Exit             ");
+            menuItem("4. User Administration");
+            menuItem("5. Exit             ");
             menuSpace();
             menuBottom();
 
-            int selection = getMenuSelection(4);
+            int selection = getMenuSelection(5);
 
             switch (selection) {
                 case 1:
@@ -61,6 +66,9 @@ public class Menu {
 //                    returnMenu();
                     break;
                 case 4:
+                    userAdminMenu();
+                    break;
+                case 5:
                     System.out.println("Thanks! Have a nice day!");
                     running = false;
                     break;
@@ -148,6 +156,30 @@ public class Menu {
         try {
             System.in.read();
         } catch (Exception ignored) {}
+    }
+
+    private static void userAdminMenu() {
+        menuTop();
+        menuSpace();
+        menuItem("Library Catalog System");
+        menuItem("- User Administration -");
+        menuSpace();
+        menuItem("1. Search For User");
+        menuItem("2. Add A New User");
+        menuItem("3. Exit");
+        menuSpace();
+        menuBottom();
+
+        int selection = getMenuSelection(3);
+
+        switch (selection) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
     }
 
     static int getMenuSelection(int numberOfChoices) {
