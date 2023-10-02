@@ -5,10 +5,12 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Initializing book database...\n");
         BookDatabase db = new BookDatabase();
+        UserDatabase userDb = new UserDatabase();
         initializeDB(db);
         Scanner scanner = new Scanner(System.in);
 
         Menu.setDb(db);
+        Menu.setUserDb(userDb);
         Menu.setScanner(scanner);
         Menu.mainMenu();
 
