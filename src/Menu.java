@@ -174,8 +174,10 @@ public class Menu {
 
         switch (selection) {
             case 1:
+                userSearchMenu();
                 break;
             case 2:
+                addUser();
                 break;
             case 3:
                 break;
@@ -202,5 +204,69 @@ public class Menu {
             }
         }
         return input;
+    }
+
+    static String getStringInput() {
+        String input = scanner.next();
+        scanner.nextLine();
+        return input;
+    }
+
+    public static void addUser() {
+        System.out.print("Enter User First Name: ");
+        String firstName = scanner.next();
+        scanner.nextLine();
+        System.out.print("Enter User Last Name: ");
+        String lastName = scanner.next();
+        scanner.nextLine();
+        System.out.print("Enter User Phone Number: ");
+        String phoneNumber = scanner.next();
+        scanner.nextLine();
+        User newUser = new User(firstName, lastName, phoneNumber);
+        userDb.addUser(newUser);
+        System.out.printf("New User, %s %s, added to system.\n", firstName, lastName);
+    }
+
+    public static void userSearchMenu() {
+        menuTop();
+        menuSpace();
+        menuItem("Library Catalog System");
+        menuItem("- User Search Menu -");
+        menuSpace();
+        menuItem("1. Search By First Name");
+        menuItem("2. Search By Last Name");
+        menuItem("3. Search By Phone Number");
+        menuItem("4. Search By UUID");
+        menuItem("5. Show All Users");
+        menuItem("5. Exit");
+        menuSpace();
+        menuBottom();
+
+        int selection = getMenuSelection(6);
+
+        switch (selection) {
+            case 1:
+                System.out.print("Enter First Name: ");
+                userDb.displaySearchList(userDb.getUserByFirstName(getStringInput()));
+                break;
+            case 2:
+                System.out.print("Enter Last Name: ");
+                userDb.displaySearchList(userDb.getUserByLastName(getStringInput()));
+                break;
+            case 3:
+                System.out.print("Enter Phone Number: ");
+                userDb.displaySearchList(userDb.getUserByPhoneNumber(getStringInput()));
+                break;
+            case 4:
+                System.out.print("Enter UUID: ");
+                userDb.displaySearchList(userDb.getUserByUUID(getStringInput()));
+                break;
+            case 5:
+                System.out.println("All Users: ");
+                userDb.showAllUsers();
+                break;
+            case 6:
+                break;
+        }
     }
 }
