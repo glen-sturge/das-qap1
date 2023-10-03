@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BookDatabase {
+public class BookDatabase implements Serializable {
     private final ArrayList<String> titles;
     private final ArrayList<String> authors;
     private final ArrayList<String> ISBNs;

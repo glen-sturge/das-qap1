@@ -1,11 +1,12 @@
+import java.io.Serializable;
 import java.util.UUID;
-public class User {
+public class User implements Serializable {
     private final String userUUID;
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
-    public User(String firstName, String lastName, Address address, String phoneNumber) {
+    public User(String firstName, String lastName, String phoneNumber) {
         UUID uuid = UUID.randomUUID();
         userUUID = uuid.toString();
         this.firstName = firstName;
