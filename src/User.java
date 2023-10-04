@@ -1,10 +1,12 @@
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 public class User implements Serializable {
     private final String userUUID;
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private ArrayList<String> heldBooks;
 
     public User(String firstName, String lastName, String phoneNumber) {
         UUID uuid = UUID.randomUUID();
@@ -12,6 +14,14 @@ public class User implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        heldBooks = new ArrayList<>();
+    }
+
+    public void addHeldBook(String isbn) {
+        heldBooks.add(isbn);
+    }
+    public void removeHeldBook(String isbn) {
+        heldBooks.remove(isbn);
     }
 
     public String getUserUUID() {
@@ -43,6 +53,6 @@ public class User implements Serializable {
     }
 
     public String toString() {
-        return String.format("User[uuid:%s,firstName:%s,lastName:%s,phone:%s]",userUUID,firstName,lastName,phoneNumber);
+        return String.format("User[uuid:%s,firstName:%s,lastName:%s,phone:%s]\nheldBooks: %s",userUUID,firstName,lastName,phoneNumber, heldBooks.toString());
     }
 }

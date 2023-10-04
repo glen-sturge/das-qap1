@@ -1,12 +1,34 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Initializing book database...\n");
+
         BookDatabase db = new BookDatabase();
         UserDatabase userDb = new UserDatabase();
-        initializeDB(db);
+        if (FileExistenceChecker.checkPath("users.ser")) {
+            try {
+                userDb.readUserDatabaseFromFile();
+                System.out.println("Users loaded from file...");
+            } catch (IOException | ClassNotFoundException e ) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Initializing user database...\n");
+            initializeUserDb(userDb);
+        }
+        if (FileExistenceChecker.checkPath("books.ser")) {
+            try {
+                db = BookDatabase.readBookDatabaseFromFile();
+                System.out.println("Books loaded from file...");
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Initializing book database...\n");
+            initializeDB(db);
+        }
         Scanner scanner = new Scanner(System.in);
 
         Menu.setDb(db);
@@ -15,6 +37,20 @@ public class Main {
         Menu.mainMenu();
 
         scanner.close();
+        try {
+            userDb.writeUserDatabaseToFile();
+            BookDatabase.writeUserDatabaseToFile(db);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    static void initializeUserDb(UserDatabase userDb) {
+        userDb.addUser("Bob", "Loblaw", "7771112463");
+        userDb.addUser("Lindsay", "Looper", "7685441515");
+        userDb.addUser("Mark", "Smith", "2224204334");
+        userDb.addUser("Harriet", "Hainseley", "2402226427");
     }
 
     static void initializeDB(BookDatabase db) {
