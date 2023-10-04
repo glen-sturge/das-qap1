@@ -16,9 +16,15 @@ public class UserDatabase {
     }
 
     public void readUserDatabaseFromFile() throws IOException, ClassNotFoundException {
-        FileInputStream fis = new FileInputStream("users.ser");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        users = (ArrayList<User>) ois.readObject();
+        try {
+            FileInputStream fis = new FileInputStream("users.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            users = (ArrayList<User>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public UserDatabase() {
@@ -27,6 +33,15 @@ public class UserDatabase {
 
     public void addUser(User newUser) {
         users.add(newUser);
+    }
+
+    public void addUser(String firstName, String lastName, String phoneNumber) {
+        User newUser = new User(firstName, lastName, phoneNumber);
+        users.add(newUser);
+    }
+
+    public User getUserByIndex(int index) {
+        return users.get(index);
     }
 
     public void displaySearchList(ArrayList<Integer> indexList) {
@@ -65,6 +80,9 @@ public class UserDatabase {
                     break;
                 case "phoneNumber":
                     m = p.matcher(users.get(i).getPhoneNumber());
+                    break;
+                case "uuid":
+                    m = p.matcher(users.get(i).getUserUUID());
                     break;
             }
             if (m.find()) {

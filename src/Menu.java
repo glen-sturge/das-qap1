@@ -45,30 +45,34 @@ public class Menu {
             menuSpace();
             menuItem("Library Catalog System");
             menuSpace();
-            menuItem("1. Search For A Book");
-            menuItem("2. Checkout A Book  ");
-            menuItem("3. Return A Book    ");
-            menuItem("4. User Administration");
-            menuItem("5. Exit             ");
+            menuItem("1. Search For A Book     ");
+            menuItem("2. Checkout A Book       ");
+            menuItem("3. Return A Book         ");
+            menuItem("4. User Administration   ");
+            menuItem("5. Library Administration");
+            menuItem("6. Exit                  ");
             menuSpace();
             menuBottom();
 
-            int selection = getMenuSelection(5);
+            int selection = getMenuSelection(6);
 
             switch (selection) {
                 case 1:
                     searchMenu();
                     break;
                 case 2:
-//                    checkoutMenu();
+                    checkoutMenu();
                     break;
                 case 3:
-//                    returnMenu();
+                    returnMenu();
                     break;
                 case 4:
                     userAdminMenu();
                     break;
                 case 5:
+                    bookAdminMenu();
+                    break;
+                case 6:
                     System.out.println("Thanks! Have a nice day!");
                     running = false;
                     break;
@@ -158,6 +162,113 @@ public class Menu {
         } catch (Exception ignored) {}
     }
 
+    private static void checkoutMenu() {
+        menuTop();
+        menuSpace();
+        menuItem("Library Catalog System");
+        menuItem("- Book Checkout -");
+        menuSpace();
+        menuBottom();
+
+        System.out.println("Enter Book ISBN: ");
+        String isbn = scanner.nextLine();
+        int index = db.isbnSearch(isbn).get(0);
+        System.out.println(db.getBookInfo(index));
+
+        if (db.getAvailability(index)) {
+            System.out.println("This Book? (y/n): ");
+            String choice = scanner.nextLine();
+
+            boolean correctBook = false;
+            switch (choice) {
+                case "y":
+                case "Y":
+                    correctBook = true;
+                    break;
+                case "n":
+                case "N":
+                default:
+                    System.out.println("Cancelling checkout...");
+                    break;
+            }
+
+            if (correctBook) {
+                System.out.println("Enter User Phone Number: ");
+                String phoneNumber = scanner.nextLine();
+                userDb.displaySearchList(userDb.getUserByPhoneNumber(phoneNumber));
+                System.out.println("This user? (y/n): ");
+                String choice2 = scanner.nextLine();
+
+                boolean correctUser = false;
+                switch (choice2) {
+                    case "y":
+                    case "Y":
+                        correctUser = true;
+                        break;
+                    case "n":
+                    case "N":
+                    default:
+                        System.out.println("Cancelling checkout...");
+                        break;
+                }
+
+                if (correctUser) {
+                    int indexOfUser = userDb.getUserByPhoneNumber(phoneNumber).get(0);
+                    String uuid = userDb.getUserByIndex(indexOfUser).getUserUUID();
+                    db.addHeldBy(index, uuid);
+                    userDb.getUserByIndex(indexOfUser).addHeldBook(isbn);
+                    System.out.println("Book Checked Out...");
+                }
+            }
+        } else {
+            System.out.println("Book is not available...");
+        }
+
+    }
+
+    private static void returnMenu() {
+        menuTop();
+        menuSpace();
+        menuItem("Library Catalog System");
+        menuItem("- Book Return -");
+        menuSpace();
+        menuBottom();
+
+        System.out.println("Enter Book ISBN: ");
+        String isbn = scanner.nextLine();
+        int index = db.isbnSearch(isbn).get(0);
+        System.out.println(db.getBookInfo(index));
+
+        if (!db.getAvailability(index)) {
+            System.out.println("This Book? (y/n): ");
+            String choice = scanner.nextLine();
+
+            boolean correctBook = false;
+            switch (choice) {
+                case "y":
+                case "Y":
+                    correctBook = true;
+                    break;
+                case "n":
+                case "N":
+                default:
+                    System.out.println("Cancelling return...");
+                    break;
+            }
+
+            if (correctBook) {
+                String uuid = db.getHeldBy(index);
+                int indexOfUser = userDb.getUserByUUID(uuid).get(0);
+                userDb.getUserByIndex(indexOfUser).removeHeldBook(isbn);
+                db.removeHeldBy(index);
+                System.out.println("Book Returned...");
+            }
+        } else {
+            System.out.println("Book is already on the shelf...");
+        }
+
+
+    }
     private static void userAdminMenu() {
         menuTop();
         menuSpace();
@@ -178,6 +289,32 @@ public class Menu {
                 break;
             case 2:
                 addUser();
+                break;
+            case 3:
+                break;
+        }
+    }
+
+    static void bookAdminMenu() {
+        menuTop();
+        menuSpace();
+        menuItem("Library Catalog System");
+        menuItem("- Library Administration -");
+        menuSpace();
+        menuItem("1. Add A New Book");
+        menuItem("2. Remove A Book");
+        menuItem("3. Exit");
+        menuSpace();
+        menuBottom();
+
+        int selection = getMenuSelection(3);
+
+        switch (selection) {
+            case 1:
+                addNewBookToBookDatabase();
+                break;
+            case 2:
+                removeBookFromDatabase();
                 break;
             case 3:
                 break;
@@ -207,9 +344,7 @@ public class Menu {
     }
 
     static String getStringInput() {
-        String input = scanner.next();
-        scanner.nextLine();
-        return input;
+        return scanner.nextLine();
     }
 
     public static void addUser() {
@@ -227,7 +362,39 @@ public class Menu {
         System.out.printf("New User, %s %s, added to system.\n", firstName, lastName);
     }
 
-    public static void userSearchMenu() {
+    public static void addNewBookToBookDatabase() {
+        System.out.println("Enter Book Title: ");
+        String title = scanner.nextLine();
+        System.out.println("Enter Author Name: ");
+        String author = scanner.nextLine();
+        System.out.println("Enter ISBN-10: ");
+        String ISBN = scanner.nextLine();
+        db.addBook(title, author, ISBN);
+        System.out.println("Book added to Book Database...");
+    }
+
+    public static void removeBookFromDatabase() {
+        System.out.println("Enter Book ISBN: ");
+        String isbn = scanner.nextLine();
+        ArrayList<Integer> results = db.isbnSearch(isbn);
+        System.out.println(db.getBookInfo(results.get(0)));
+        System.out.println();
+        System.out.println("Are you sure you want to delete this book? (y/n)");
+        String choice = scanner.nextLine();
+
+        switch (choice) {
+            case "y":
+            case "Y":
+                db.removeBook(isbn);
+                break;
+            case "n":
+            case "N":
+            default:
+                System.out.println("Cancelling book deletion...");
+                break;
+        }
+    }
+     public static void userSearchMenu() {
         menuTop();
         menuSpace();
         menuItem("Library Catalog System");
